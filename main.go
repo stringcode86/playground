@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"playground/goutils"
 	"sync"
 	"time"
@@ -134,6 +135,11 @@ func (pdt *PDTrader) marketInfo(symbol string) *marketInfo {
 func (pdt *PDTrader) dispatchPumpSerachWork3(tArr []*Ticker) {
 	// TODO: Check wether all the elements in the array
 	// are unique. Look up algorithm that does that
+	if hasUniqueElements(tArr) == false {
+		log.Println("Non unique array")
+		log.Println(tArr)
+		os.Exit(1)
+	}
 	wCh := make(chan []*Ticker)
 	rCh := make(chan struct{})
 	workersCnt := workerPoolSize

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"math/rand"
 	"strings"
 	"time"
@@ -8,22 +9,22 @@ import (
 
 var symbols = []string{
 	"ETHBTC", "LTCBTC", "XMRBTC", "XRPBTC", "BNBBTC", "NEOBTC",
-	"1ETHBTC", "1LTCBTC", "1XMRBTC", "1XRPBTC", "1BNBBTC", "3NEOBTC",
+	"1ETHBTC", "1LTCBTC", "1XMRBTC", "1XRPBTC", "1BNBBTC", "1NEOBTC",
 	"2ETHBTC", "2LTCBTC", "2XMRBTC", "2XRPBTC", "2BNBBTC", "2NEOBTC",
-	"3ETHBTC", "3LTCBTC", "3XMRBTC", "3XRPBTC", "3BNBBTC", "4NEOBTC",
-	"4ETHBTC", "4LTCBTC", "4XMRBTC", "4XRPBTC", "4BNBBTC", "5NEOBTC",
-	"5ETHBTC", "5LTCBTC", "5XMRBTC", "5XRPBTC", "5BNBBTC", "6NEOBTC",
-	"6ETHBTC", "6LTCBTC", "6XMRBTC", "6XRPBTC", "6BNBBTC", "7NEOBTC",
+	"3ETHBTC", "3LTCBTC", "3XMRBTC", "3XRPBTC", "3BNBBTC", "3NEOBTC",
+	"4ETHBTC", "4LTCBTC", "4XMRBTC", "4XRPBTC", "4BNBBTC", "4NEOBTC",
+	"5ETHBTC", "5LTCBTC", "5XMRBTC", "5XRPBTC", "5BNBBTC", "5NEOBTC",
+	"6ETHBTC", "6LTCBTC", "6XMRBTC", "6XRPBTC", "6BNBBTC", "6NEOBTC",
 	"7ETHBTC", "7LTCBTC", "7XMRBTC", "7XRPBTC", "7BNBBTC", "7NEOBTC",
 	"8ETHBTC", "8LTCBTC", "8XMRBTC", "8XRPBTC", "8BNBBTC", "8NEOBTC",
 	"9ETHBTC", "9LTCBTC", "9XMRBTC", "9XRPBTC", "9BNBBTC", "9NEOBTC",
 	"0ETHBTC", "0LTCBTC", "0XMRBTC", "0XRPBTC", "0BNBBTC", "0NEOBTC",
-	"1XTHBTC", "1XTCBTC", "1ZMRBTC", "1ZRPBTC", "1XNBBTC", "3XEOBTC",
+	"1XTHBTC", "1XTCBTC", "1ZMRBTC", "1ZRPBTC", "1XNBBTC", "1XEOBTC",
 	"2XTHBTC", "2XTCBTC", "2ZMRBTC", "2ZRPBTC", "2XNBBTC", "2XEOBTC",
-	"3XTHBTC", "3XTCBTC", "3ZMRBTC", "3ZRPBTC", "3XNBBTC", "4XEOBTC",
-	"4XTHBTC", "4XTCBTC", "4ZMRBTC", "4ZRPBTC", "4XNBBTC", "5XEOBTC",
-	"5XTHBTC", "5XTCBTC", "5ZMRBTC", "5ZRPBTC", "5XNBBTC", "6XEOBTC",
-	"6XTHBTC", "6XTCBTC", "6ZMRBTC", "6ZRPBTC", "6XNBBTC", "7XEOBTC",
+	"3XTHBTC", "3XTCBTC", "3ZMRBTC", "3ZRPBTC", "3XNBBTC", "3XEOBTC",
+	"4XTHBTC", "4XTCBTC", "4ZMRBTC", "4ZRPBTC", "4XNBBTC", "4XEOBTC",
+	"5XTHBTC", "5XTCBTC", "5ZMRBTC", "5ZRPBTC", "5XNBBTC", "5XEOBTC",
+	"6XTHBTC", "6XTCBTC", "6ZMRBTC", "6ZRPBTC", "6XNBBTC", "6XEOBTC",
 }
 
 type Ticker struct {
@@ -109,4 +110,16 @@ func newPdContext(t *Ticker) *pdContext {
 		base:         base,
 		quote:        quote,
 	}
+}
+
+func hasUniqueElements(arr []*Ticker) bool {
+	seenMarkets := make(map[string]bool)
+	for i, t := range arr {
+		if _, ok := seenMarkets[t.Symbol]; ok {
+			log.Println(i, t.Symbol)
+			return false
+		}
+		seenMarkets[t.Symbol] = true
+	}
+	return true
 }
