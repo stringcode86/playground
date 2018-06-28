@@ -1,2 +1,2 @@
 # playground
-Random Golan hacks, nothing of any use to anyone
+Random Golang hacks, nothing of any use to anyone
