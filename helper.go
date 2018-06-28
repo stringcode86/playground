@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"math/rand"
+	"os"
 	"strings"
 	"time"
 )
@@ -37,9 +38,15 @@ type Ticker struct {
 func TickerStream() chan []*Ticker {
 	ch := make(chan []*Ticker)
 	go func(ch chan []*Ticker) {
+		buffer := make([][]*Ticker, 0, genratorStreamCount)
 		for i := 0; i < genratorStreamCount; i++ {
-			ch <- generateRandomTickers(genratorArrSize)
-			//log.Println(i)
+			//ch <- generateRandomTickers(genratorArrSize)
+			//log.Println("Done: ", i)
+			buffer = append(buffer, generateRandomTickers(genratorArrSize))
+		}
+		log.Println("Begining sending")
+		for i := 0; i < genratorStreamCount; i++ {
+			ch <- buffer[i]
 		}
 		close(ch)
 	}(ch)
@@ -47,7 +54,8 @@ func TickerStream() chan []*Ticker {
 }
 
 func generateRandomTickers(count int) []*Ticker {
-	dSyms := symbols
+	dSyms := make([]string, count, count)
+	copy(dSyms, symbols)
 	tArr := make([]*Ticker, 0, count)
 	for i := 0; i < count; i++ {
 		s := ""
@@ -56,6 +64,9 @@ func generateRandomTickers(count int) []*Ticker {
 			idx := rand.Intn(dSymsLen)
 			s = dSyms[idx]
 			dSyms = append(dSyms[:idx], dSyms[idx+1:]...)
+		} else {
+			log.Println("WHAT!", len(tArr))
+			os.Exit(1)
 		}
 		tArr = append(tArr, NewRandomTicker(s))
 	}
@@ -116,10 +127,17 @@ func hasUniqueElements(arr []*Ticker) bool {
 	seenMarkets := make(map[string]bool)
 	for i, t := range arr {
 		if _, ok := seenMarkets[t.Symbol]; ok {
-			log.Println(i, t.Symbol)
+			log.Println("First dumplicate index", i)
+			logEnumerate(arr)
 			return false
 		}
 		seenMarkets[t.Symbol] = true
 	}
 	return true
+}
+
+func logEnumerate(tArr []*Ticker) {
+	for i, t := range tArr {
+		log.Println(i, *t)
+	}
 }

@@ -3,14 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"playground/goutils"
 	"sync"
 	"time"
 )
 
 const genratorArrSize int = 102
-const genratorStreamCount int = 100000
+const genratorStreamCount int = 1000000
 
 const bufferSize int = 3
 const workerPoolSize int = 4
@@ -19,16 +18,7 @@ func main() {
 	log.Println("Let the fun beging")
 	sCh := TickerStream()
 	pdt := NewPDTrader()
-	// debugCh := make(chan []*Ticker)
-	// debugArr := []*Ticker{
-	// 	&Ticker{0, "LTCBTC", 0.3401, time.Unix(int64(0), 0)},
-	// 	&Ticker{1, "LTCBTC", 0.3402, time.Unix(int64(1), 0)},
-	// 	&Ticker{2, "LTCBTC", 0.3403, time.Unix(int64(3), 0)},
-	// 	&Ticker{3, "LTCBTC", 0.3404, time.Unix(int64(4), 0)},
-	// 	nil,
-	// }
 	pdt.SetStream(sCh)
-	//debugCh <- debugArr
 	var input string
 	fmt.Scanln(&input)
 }
@@ -82,7 +72,6 @@ func (pdt *PDTrader) dispatchPumpSerachWork(tArr []*Ticker) {
 		case rID := <-rCh:
 			delete(wIDs, rID)
 			jobTotal--
-			//log.Println(jobTotal)
 			if jobTotal == 0 {
 				close(wCh)
 				return
@@ -97,7 +86,6 @@ func (pdt *PDTrader) dispatchPumpSerachWork(tArr []*Ticker) {
 			}
 			tArr = tArr[1:]
 			wIDs[t.Symbol] = true
-			//log.Println(wIDs, len(tArr))
 			mi := pdt.marketInfo(t.Symbol)
 			wi := &workerItem{t, mi}
 			wCh <- wi // &workerItem{t, mi}
@@ -133,13 +121,6 @@ func (pdt *PDTrader) marketInfo(symbol string) *marketInfo {
 }
 
 func (pdt *PDTrader) dispatchPumpSerachWork3(tArr []*Ticker) {
-	// TODO: Check wether all the elements in the array
-	// are unique. Look up algorithm that does that
-	if hasUniqueElements(tArr) == false {
-		log.Println("Non unique array")
-		log.Println(tArr)
-		os.Exit(1)
-	}
 	wCh := make(chan []*Ticker)
 	rCh := make(chan struct{})
 	workersCnt := workerPoolSize
@@ -153,7 +134,6 @@ func (pdt *PDTrader) dispatchPumpSerachWork3(tArr []*Ticker) {
 			wCh <- tArr[sliceSize*i:]
 		} else {
 			offset := sliceSize * i
-			log.Println(offset, offset+sliceSize, len(tArr), i)
 			wCh <- tArr[offset : offset+sliceSize]
 		}
 	}
